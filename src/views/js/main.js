@@ -406,13 +406,13 @@ var resizePizzas = function(size) {
   function changeSliderLabel(size) {
     switch(size) {
       case "1":
-        document.querySelector("#pizzaSize").innerHTML = "Small";
+        document.getElementById("pizzaSize").innerHTML = "Small";
         return;
       case "2":
-        document.querySelector("#pizzaSize").innerHTML = "Medium";
+        document.getElementById("pizzaSize").innerHTML = "Medium";
         return;
       case "3":
-        document.querySelector("#pizzaSize").innerHTML = "Large";
+        document.getElementById("pizzaSize").innerHTML = "Large";
         return;
       default:
         console.log("bug in changeSliderLabel");
@@ -421,7 +421,8 @@ var resizePizzas = function(size) {
 
   changeSliderLabel(size);
 
-   // Returns the size difference to change a pizza element from one size to another. Called by changePizzaSlices(size).
+  //Returns the size difference to change a pizza element from one size to another. Called by changePizzaSlices(size).
+  /* This function seems useless so I am getting rid of it
   function determineDx (elem, size) {
     var oldWidth = elem.offsetWidth;
     var windowWidth = document.querySelector("#randomPizzas").offsetWidth;
@@ -446,17 +447,34 @@ var resizePizzas = function(size) {
 
     return dx;
   }
+  */
 
-  // Iterates through pizza elements on the page and changes their widths
-  function changePizzaSizes(size) {
-    for (var i = 0; i < document.querySelectorAll(".randomPizzaContainer").length; i++) {
-      var dx = determineDx(document.querySelectorAll(".randomPizzaContainer")[i], size);
-      var newwidth = (document.querySelectorAll(".randomPizzaContainer")[i].offsetWidth + dx) + 'px';
-      document.querySelectorAll(".randomPizzaContainer")[i].style.width = newwidth;
+  //Optimizing the insane pizza slider code - comes from Cameron's explanation in the course video.
+  function changePizzaSizes (size) {
+    switch(size) {
+      case "1":
+        newWidth = 25;
+        break;
+      case "2":
+        newWidth = 33.3;
+        break;
+      case "3":
+        newWidth = 50;
+        break;
+      default:
+        console.log("bug in changePizzaSizes");
+    }
+
+    //querySelectorAll is replaced by getElementsByClassName because it is less expensive
+    var randomPizzas = document.getElementsByClassName("randomPizzaContainer");
+
+    for (var i = 0; i <randomPizzas.length; i++) {
+      randomPizzas[i].style.width = newWidth + "%";
     }
   }
 
   changePizzaSizes(size);
+
 
   // User Timing API is awesome
   window.performance.mark("mark_end_resize");
@@ -499,13 +517,32 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
 // Moves the sliding background pizzas based on scroll position
 function updatePositions() {
   frame++;
+//optimising by using getElementsByClassName, saving variables outside of loop
+  var items = document.getElementsByClassName('mover');
+  var itemsLength = items.length;
+  // created var scrollPosition to take complicated calculations out of the for loop
+  var scrollPosition = document.body.scrollTop;
+  //created an array variable as per the hints in the office hours walkthrough
+  var scrollArray = [];
+  var i;
+//tried to simplify the for loop and take out unnecessary calculations
+    for (i = 0; i < 5; i++){
+  scrollArray.push(Math.sin((scrollPosition / 1250) + i));
+  }
+
+//looked up transform:translateX and used it to display the pizzas in a way that would prevent triggering layout
+    for (i = 0; i < itemsLength; i++) {
+      var phase = scrollArray[i % 5];
+      items[i].style.transform = 'translateX(' + 100 * phase + 'px)';
+  }
   window.performance.mark("mark_start_frame");
 
-  var items = document.querySelectorAll('.mover');
-  for (var i = 0; i < items.length; i++) {
-    var phase = Math.sin((document.body.scrollTop / 1250) + (i % 5));
-    items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
-  }
+  /*Advanced Hack here: Can we also reduce the nedd for the browser to paint the entire screen? Can we tell...
+  actually moving? Whenever a pixel in a layer changes, the broswer repainst the enture later. Therefore...
+  animating pizz in its own layer? Therefore whenever we animate the pizza, only a small part of the screen is repainted.
+  we should look this up to see if they can force our elements into its own layer:
+  transform: translateX;
+  */
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
   // Super easy to create custom metrics.
@@ -524,13 +561,14 @@ window.addEventListener('scroll', updatePositions);
 document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
   var s = 256;
-  for (var i = 0; i < 200; i++) {
+  //do we need 200 pizzas?
+  for (var i = 0; i < 30; i++) {
     var elem = document.createElement('img');
     elem.className = 'mover';
     elem.src = "images/pizza.png";
     elem.style.height = "100px";
     elem.style.width = "73.333px";
-    elem.basicLeft = (i % cols) * s;
+    elem.style.left = (i % cols) * s + 'px';
     elem.style.top = (Math.floor(i / cols) * s) + 'px';
     document.querySelector("#movingPizzas1").appendChild(elem);
   }
