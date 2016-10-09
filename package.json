@@ -21,6 +21,8 @@
     "grunt-contrib-cssmin": "^1.0.2",
     "grunt-contrib-uglify": "^2.0.0",
     "grunt-critical": "^0.2.1",
-    "grunt-tinyimg": "^1.0.0"
+    "grunt-pagespeed": "^2.0.1",
+    "grunt-tinyimg": "^1.0.0",
+    "load-grunt-tasks": "^3.5.2"
   }
 }
