@@ -467,36 +467,7 @@ function changePizzaSizes(size) {
     lengthHolderOne[i].style.width = newwidth;
   }
 }
-
 changePizzaSizes(size);
-
-//my first pizza resizing attempt
-  //Optimizing the insane pizza slider code - comes from Cameron's explanation in the course video.
-  // function changePizzaSizes (size) {
-  //   switch(size) {
-  //     case "1":
-  //       newWidth = 25;
-  //       break;
-  //     case "2":
-  //       newWidth = 33.3;
-  //       break;
-  //     case "3":
-  //       newWidth = 50;
-  //       break;
-  //     default:
-  //       console.log("bug in changePizzaSizes");
-  //   }
-  //
-  //   //querySelectorAll is replaced by getElementsByClassName because it is less expensive
-  //   var randomPizzas = document.getElementsByClassName("randomPizzaContainer");
-  //
-  //   for (var i = 0; i <randomPizzas.length; i++) {
-  //     randomPizzas[i].style.width = newWidth + "%";
-  //   }
-  // }
-  //
-  // changePizzaSizes(size);
-
 
   // User Timing API is awesome
   window.performance.mark("mark_end_resize");
@@ -553,9 +524,6 @@ function updatePositions() {
     scrollArray.push(scroll);
   }
 
-  // for (var i = 0; i < itemsLength; i++) {
-  //   items[i].style.left = items[i].basicLeft + 100 * scrollArray[i] + 'px';
-  // }
 // looked up transform:translateX and used it to display the pizzas in a way that would prevent triggering layout
   for (i = 0; i < itemsLength; i++) {
     var phase = scrollArray[i % 5];
@@ -589,7 +557,6 @@ document.addEventListener('DOMContentLoaded', function() {
     elem.style.height = "100px";
     elem.style.width = "73.333px";
     elem.style.left = (i % cols) * s + 'px';
-    // elem.basicLeft = (i % cols) * s;
     elem.style.top = (Math.floor(i / cols) * s) + 'px';
     document.querySelector("#movingPizzas1").appendChild(elem);
   }
