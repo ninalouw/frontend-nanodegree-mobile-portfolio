@@ -406,23 +406,21 @@ var resizePizzas = function(size) {
   function changeSliderLabel(size) {
     switch(size) {
       case "1":
-        document.getElementById("pizzaSize").innerHTML = "Small";
+        document.querySelector("#pizzaSize").innerHTML = "Small";
         return;
       case "2":
-        document.getElementById("pizzaSize").innerHTML = "Medium";
+        document.querySelector("#pizzaSize").innerHTML = "Medium";
         return;
       case "3":
-        document.getElementById("pizzaSize").innerHTML = "Large";
+        document.querySelector("#pizzaSize").innerHTML = "Large";
         return;
       default:
         console.log("bug in changeSliderLabel");
     }
   }
-
   changeSliderLabel(size);
 
   //Returns the size difference to change a pizza element from one size to another. Called by changePizzaSlices(size).
-  /* This function seems useless so I am getting rid of it
   function determineDx (elem, size) {
     var oldWidth = elem.offsetWidth;
     var windowWidth = document.querySelector("#randomPizzas").offsetWidth;
@@ -447,33 +445,57 @@ var resizePizzas = function(size) {
 
     return dx;
   }
-  */
 
-  //Optimizing the insane pizza slider code - comes from Cameron's explanation in the course video.
-  function changePizzaSizes (size) {
-    switch(size) {
-      case "1":
-        newWidth = 25;
-        break;
-      case "2":
-        newWidth = 33.3;
-        break;
-      case "3":
-        newWidth = 50;
-        break;
-      default:
-        console.log("bug in changePizzaSizes");
-    }
+//my second attempt at pizza resizing optimization
+//save results in these two variables to prevent more querying
+var lengthHolderOne = document.getElementsByClassName('randomPizzaContainer');
+var lengthHolderTwo = document.getElementsByClassName("randomPizzaContainer").length;
 
-    //querySelectorAll is replaced by getElementsByClassName because it is less expensive
-    var randomPizzas = document.getElementsByClassName("randomPizzaContainer");
+function layout(size){
+  for(var i = 0; i < lengthHolderTwo; i++){
+    var dx = determineDx((lengthHolderOne)[i], size);
+    var newwidth = (lengthHolderOne[i].offsetWidth + dx) + 'px';
 
-    for (var i = 0; i <randomPizzas.length; i++) {
-      randomPizzas[i].style.width = newWidth + "%";
-    }
+    return newwidth;
   }
+}
 
-  changePizzaSizes(size);
+var newwidth = layout(size);
+// Iterates through pizza elements on the page and changes their widths
+function changePizzaSizes(size) {
+  for (var i = 0; i < lengthHolderTwo; i++) {
+    lengthHolderOne[i].style.width = newwidth;
+  }
+}
+
+changePizzaSizes(size);
+
+//my first pizza resizing attempt
+  //Optimizing the insane pizza slider code - comes from Cameron's explanation in the course video.
+  // function changePizzaSizes (size) {
+  //   switch(size) {
+  //     case "1":
+  //       newWidth = 25;
+  //       break;
+  //     case "2":
+  //       newWidth = 33.3;
+  //       break;
+  //     case "3":
+  //       newWidth = 50;
+  //       break;
+  //     default:
+  //       console.log("bug in changePizzaSizes");
+  //   }
+  //
+  //   //querySelectorAll is replaced by getElementsByClassName because it is less expensive
+  //   var randomPizzas = document.getElementsByClassName("randomPizzaContainer");
+  //
+  //   for (var i = 0; i <randomPizzas.length; i++) {
+  //     randomPizzas[i].style.width = newWidth + "%";
+  //   }
+  // }
+  //
+  // changePizzaSizes(size);
 
 
   // User Timing API is awesome
@@ -517,53 +539,62 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
 // Moves the sliding background pizzas based on scroll position
 function updatePositions() {
   frame++;
-//optimising by using getElementsByClassName, saving variables outside of loop
-  var items = document.getElementsByClassName('mover');
+  //optimising by saving variables outside of loop
   var itemsLength = items.length;
   // created var scrollPosition to take complicated calculations out of the for loop
-  var scrollPosition = document.body.scrollTop;
+  var scrollPosition = document.body.scrollTop / 1250;
   //created an array variable as per the hints in the office hours walkthrough
+  //it holds all the possible pizza positions
   var scrollArray = [];
-  var i;
 //tried to simplify the for loop and take out unnecessary calculations
-    for (i = 0; i < 5; i++){
-  scrollArray.push(Math.sin((scrollPosition /1250) + i));
+  for (var i = 0; i < itemsLength; i++){
+    //changed calculation of scroll because it doesnt need to be constantly calculated
+    var scroll = Math.sin((scrollPosition) + (i % 5));
+    scrollArray.push(scroll);
   }
 
-//looked up transform:translateX and used it to display the pizzas in a way that would prevent triggering layout
-    for (i = 0; i < itemsLength; i++) {
-      var phase = scrollArray[i % 5];
-      items[i].style.transform = 'translateX(' + 100 * phase + 'px)';
-  }
-  window.performance.mark("mark_start_frame");
+  // for (var i = 0; i < itemsLength; i++) {
+  //   items[i].style.left = items[i].basicLeft + 100 * scrollArray[i] + 'px';
+  // }
+// looked up transform:translateX and used it to display the pizzas in a way that would prevent triggering layout
+  for (i = 0; i < itemsLength; i++) {
+    var phase = scrollArray[i % 5];
+    items[i].style.transform = 'translateX(' + 100 * phase + 'px)';
+  };
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
   // Super easy to create custom metrics.
+  window.performance.mark("mark_start_frame");
   window.performance.mark("mark_end_frame");
   window.performance.measure("measure_frame_duration", "mark_start_frame", "mark_end_frame");
   if (frame % 10 === 0) {
     var timesToUpdatePosition = window.performance.getEntriesByName("measure_frame_duration");
     logAverageFrame(timesToUpdatePosition);
-  }
+  };
 }
 
 // runs updatePositions on scroll
 window.addEventListener('scroll', updatePositions);
-
+//declared items variable globally so it can be accessed by updatePositions
+var items;
 // Generates the sliding pizzas when the page loads.
 document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
   var s = 256;
-  //changed from 200 pizzas to 10
-  for (var i = 0; i < 10; i++) {
+  //changed from 200 pizzas to 15
+  for (var i = 0; i < 15; i++) {
     var elem = document.createElement('img');
     elem.className = 'mover';
     elem.src = "images/pizza.png";
     elem.style.height = "100px";
     elem.style.width = "73.333px";
     elem.style.left = (i % cols) * s + 'px';
+    // elem.basicLeft = (i % cols) * s;
     elem.style.top = (Math.floor(i / cols) * s) + 'px';
     document.querySelector("#movingPizzas1").appendChild(elem);
   }
+  //optimising by using getElementsByClassName, also moved this outside
+  // of updatePositions so Dom not queried on scroll
+  items = document.getElementsByClassName('mover');
   updatePositions();
 });
