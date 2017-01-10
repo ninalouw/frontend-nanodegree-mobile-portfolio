@@ -527,7 +527,7 @@ function updatePositions() {
   var i;
 //tried to simplify the for loop and take out unnecessary calculations
     for (i = 0; i < 5; i++){
-  scrollArray.push(Math.sin((scrollPosition / 1250) + i));
+  scrollArray.push(Math.sin((scrollPosition /1250) + i));
   }
 
 //looked up transform:translateX and used it to display the pizzas in a way that would prevent triggering layout
@@ -536,13 +536,6 @@ function updatePositions() {
       items[i].style.transform = 'translateX(' + 100 * phase + 'px)';
   }
   window.performance.mark("mark_start_frame");
-
-  /*Advanced Hack here: Can we also reduce the nedd for the browser to paint the entire screen? Can we tell...
-  actually moving? Whenever a pixel in a layer changes, the broswer repainst the enture later. Therefore...
-  animating pizz in its own layer? Therefore whenever we animate the pizza, only a small part of the screen is repainted.
-  we should look this up to see if they can force our elements into its own layer:
-  transform: translateX;
-  */
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
   // Super easy to create custom metrics.
@@ -561,8 +554,8 @@ window.addEventListener('scroll', updatePositions);
 document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
   var s = 256;
-  //do we need 200 pizzas?
-  for (var i = 0; i < 30; i++) {
+  //changed from 200 pizzas to 10
+  for (var i = 0; i < 10; i++) {
     var elem = document.createElement('img');
     elem.className = 'mover';
     elem.src = "images/pizza.png";
