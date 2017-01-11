@@ -42,6 +42,3 @@ Using Google Chrome DevTools FPS counter and timeline, I optimized the JavaScrip
 * [Avoiding Rendering Blocking CSS](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/render-blocking-css.html "render blocking css")
 * [Optimizing JavaScript](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/adding-interactivity-with-javascript.html "javascript")
 * [Optimizing Images for the Web](https://www.designbrooklyn.com/resources/help-center/Website-Management/Optimizing-images-for-the-web.html)
-
-
-Udacity Front-End Web Developer Nanodegree
