@@ -449,7 +449,8 @@ var resizePizzas = function(size) {
 //my second attempt at pizza resizing optimization
 //save results in these two variables to prevent more querying
 var lengthHolderOne = document.getElementsByClassName('randomPizzaContainer');
-var lengthHolderTwo = document.getElementsByClassName("randomPizzaContainer").length;
+//changed how lengthHolderTwo calculated to prevent a second querying of the DOM
+var lengthHolderTwo = lengthHolderOne.length;
 
 function layout(size){
   for(var i = 0; i < lengthHolderTwo; i++){
